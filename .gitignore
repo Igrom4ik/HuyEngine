@@ -1,0 +1,42 @@
+# Build directories
+build/
+cmake-build-*/
+vs-build/
+# IDE directories
+.vs/
+.vscode/
+.idea/
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake.in
+# Compiled files
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+# Log files
+*.log
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+# User configuration
+Automation/user_config.py
+# Build logs
+build.log
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
