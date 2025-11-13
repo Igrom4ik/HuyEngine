@@ -1,16 +1,8 @@
-//
-// Created by igrom on 13.11.2025.
-//
-
-#include "Engine.h"
+#include "Engine.hpp"
 #include <iostream>
 
-namespace HuyEngine {
-    void SayHello() {
-        std::cout << "Hello from HuyEngine!" << std::endl;
-    }
+using namespace HuyEngine;
 
-    void Engine::Run() {
-        std::cout << "Engine is running..." << std::endl;
-    }
+HuyEngine::Engine::Engine() {
+    std::cout << "Hello HuyEngine Engine" << std::endl;
 }

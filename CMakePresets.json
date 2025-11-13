@@ -36,20 +36,10 @@
       }
     },
     {
-      "name": "vs-base",
-      "hidden": true,
-      "inherits": "base",
-      "generator": "Visual Studio 17 2022",
-      "architecture": {
-        "value": "x64",
-        "strategy": "set"
-      }
-    },
-    {
       "name": "otladka",
       "displayName": "Отладка (Ninja)",
       "inherits": "ninja-base",
-      "binaryDir": "${sourceDir}/build",
+      "binaryDir": "${sourceDir}/cmake-build-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -62,18 +52,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    },
-    {
-      "name": "otladka-vs",
-      "displayName": "Отладка (Visual Studio)",
-      "inherits": "vs-base",
-      "binaryDir": "${sourceDir}/build-vs"
-    },
-    {
-      "name": "reliz-vs",
-      "displayName": "Релиз (Visual Studio)",
-      "inherits": "vs-base",
-      "binaryDir": "${sourceDir}/cmake-build-release-vs"
     }
   ],
   "buildPresets": [
@@ -86,19 +64,6 @@
       "name": "reliz",
       "displayName": "Релиз (Ninja)",
       "configurePreset": "reliz"
-    },
-    {
-      "name": "otladka-vs",
-      "displayName": "Отладка (Visual Studio)",
-      "configurePreset": "otladka-vs",
-      "configuration": "Debug"
-    },
-    {
-      "name": "reliz-vs",
-      "displayName": "Релиз (Visual Studio)",
-      "configurePreset": "reliz-vs",
-      "configuration": "Release"
     }
   ]
 }
-

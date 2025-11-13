@@ -60,3 +60,5 @@ PVS-Studio.tasks
 PVS-Studio.reports/
 *.pvslog
 *.pvsconfig
+
+EngineConfig.h
