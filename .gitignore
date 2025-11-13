@@ -50,3 +50,13 @@ build-dist/
 
 # Keep docs in repo (moved to docs/)
 !docs/
+
+# Ignore PVS-Studio analyzer data and reports
+/.PVS-Studio/
+PVS-Studio.log
+PVS-Studio.cfg
+PVS-Studio.json
+PVS-Studio.tasks
+PVS-Studio.reports/
+*.pvslog
+*.pvsconfig
