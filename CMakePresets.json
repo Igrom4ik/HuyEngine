@@ -1,0 +1,104 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_CXX_EXTENSIONS": "OFF",
+        "CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API": "2182bf5c-ef0d-489a-91da-49dbc3090d2a",
+        "CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDEP": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "ninja-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "toolchainFile": "${sourceDir}/Automation/CMAKE/Toolchains/toolchain-msvc.cmake",
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
+      }
+    },
+    {
+      "name": "vs-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Visual Studio 17 2022",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      }
+    },
+    {
+      "name": "otladka",
+      "displayName": "Отладка (Ninja)",
+      "inherits": "ninja-base",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "reliz",
+      "displayName": "Релиз (Ninja)",
+      "inherits": "ninja-base",
+      "binaryDir": "${sourceDir}/cmake-build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "otladka-vs",
+      "displayName": "Отладка (Visual Studio)",
+      "inherits": "vs-base",
+      "binaryDir": "${sourceDir}/build-vs"
+    },
+    {
+      "name": "reliz-vs",
+      "displayName": "Релиз (Visual Studio)",
+      "inherits": "vs-base",
+      "binaryDir": "${sourceDir}/cmake-build-release-vs"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "otladka",
+      "displayName": "Отладка (Ninja)",
+      "configurePreset": "otladka"
+    },
+    {
+      "name": "reliz",
+      "displayName": "Релиз (Ninja)",
+      "configurePreset": "reliz"
+    },
+    {
+      "name": "otladka-vs",
+      "displayName": "Отладка (Visual Studio)",
+      "configurePreset": "otladka-vs",
+      "configuration": "Debug"
+    },
+    {
+      "name": "reliz-vs",
+      "displayName": "Релиз (Visual Studio)",
+      "configurePreset": "reliz-vs",
+      "configuration": "Release"
+    }
+  ]
+}
+

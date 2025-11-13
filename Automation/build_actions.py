@@ -6,12 +6,11 @@ HuyEngine - Build Actions
 import os
 import shutil
 import subprocess
-from pathlib import Path
 
 try:
-    from .build_config import BuildConfig, BuildSystem
+    from .build_config import BuildConfig, BuildSystem, Toolchain
 except ImportError:
-    from build_config import BuildConfig, BuildSystem
+    from build_config import BuildConfig, BuildSystem, Toolchain
 
 
 def setup_msvc_environment():
@@ -76,17 +75,50 @@ def get_cmake_generate_command():
         f'-DCMAKE_BUILD_TYPE={BuildConfig.current_configuration.value}',
     ]
 
-    # Additional parameters for Ninja
+    # Toolchain handling for CMake
+    tc_file = None
     if BuildConfig.current_build_system == BuildSystem.NINJA:
+        tc_file = BuildConfig.get_toolchain_file()
+        if tc_file and os.path.exists(tc_file):
+            args.append(f'-DCMAKE_TOOLCHAIN_FILE="{tc_file}"')
+
+        # Provide make program path
         if BuildConfig.NINJA_PATH:
             args.append(f'-DCMAKE_MAKE_PROGRAM="{BuildConfig.NINJA_PATH}"')
 
-        if BuildConfig.CXX_COMPILER:
-            args.append(f'-DCMAKE_CXX_COMPILER="{BuildConfig.CXX_COMPILER}"')
-        if BuildConfig.C_COMPILER:
-            args.append(f'-DCMAKE_C_COMPILER="{BuildConfig.C_COMPILER}"')
+        # Export project name and C++ standard explicitly so CMakeLists can use them
+        args.append(f'-DPROJECT_NAME="{BuildConfig.get_project_name()}"')
+        args.append(f'-DPROJECT_CXX_STANDARD={BuildConfig.get_cxx_standard()}')
+        args.append(f'-DCMAKE_MINIMUM_REQUIRED={BuildConfig.get_cmake_minimum_version()}')
 
-    # Add platform for Visual Studio
+        # For manual override when no toolchain file is used
+        if BuildConfig.current_toolchain == Toolchain.MSVC:
+            # Use cl.exe (via env), don't pass compilers explicitly if toolchain file handles it
+            if not tc_file:
+                if BuildConfig.CXX_COMPILER:
+                    args.append(f'-DCMAKE_CXX_COMPILER="{BuildConfig.CXX_COMPILER}"')
+                if BuildConfig.C_COMPILER:
+                    args.append(f'-DCMAKE_C_COMPILER="{BuildConfig.C_COMPILER}"')
+        elif BuildConfig.current_toolchain == Toolchain.CLANG_CL:
+            # With clang-cl toolchain we rely on vcvarsall environment
+            if not tc_file and BuildConfig.CLANG_CL_PATH:
+                args.append(f'-DCMAKE_CXX_COMPILER="{BuildConfig.CLANG_CL_PATH}"')
+                args.append(f'-DCMAKE_C_COMPILER="{BuildConfig.CLANG_CL_PATH}"')
+            # Tell CMake to use MSVC-like environment when using clang-cl
+            args.append('-T clangcl')
+        elif BuildConfig.current_toolchain == Toolchain.MINGW_GCC:
+            # Prefer toolchain file; also pass explicit compilers if detected to force MinGW
+            if tc_file and os.path.exists(tc_file):
+                args.append(f'-DCMAKE_TOOLCHAIN_FILE="{tc_file}"')
+            # Always prefer explicit compilers when available to avoid MSVC picking
+            if BuildConfig.GPP_PATH:
+                args.append(f'-DCMAKE_CXX_COMPILER="{BuildConfig.GPP_PATH}"')
+            if BuildConfig.GCC_PATH:
+                args.append(f'-DCMAKE_C_COMPILER="{BuildConfig.GCC_PATH}"')
+            # Ensure Windows MinGW platform
+            args.append('-DCMAKE_SYSTEM_NAME=Windows')
+
+    # Add platform for Visual Studio generator
     if BuildConfig.current_build_system == BuildSystem.MSBUILD:
         if BuildConfig.current_platform.value != "x64":
             args.append(f'-A {BuildConfig.current_platform.value}')
@@ -141,6 +173,9 @@ def clean_all_build_folders():
     build_folders = [
         "build",
         "vs-build",
+        "build-msvc",
+        "build-clang-cl",
+        "build-mingw",
         "cmake-build-debug",
         "cmake-build-release",
         "cmake-build-relwithdebinfo",
@@ -153,9 +188,9 @@ def clean_all_build_folders():
 
 def generate_project():
     """Генерирует проект CMake"""
-    print("="*70)
+    print("=" * 70)
     print(f"ГЕНЕРАЦИЯ ПРОЕКТА ({BuildConfig.current_configuration.value})")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # Получаем команду
@@ -169,9 +204,13 @@ def generate_project():
         build_folder.mkdir(parents=True)
         print(f"✓ Создана папка: {BuildConfig.get_build_folder()}")
 
-    # Настраиваем окружение для MSVC если нужно
+    # Настраиваем окружение
     env = os.environ.copy()
-    if BuildConfig.current_build_system == BuildSystem.NINJA and BuildConfig.VCVARSALL_PATH:
+
+    # If using MSVC or clang-cl, set up MSVC env (libraries, include paths)
+    if BuildConfig.current_build_system == BuildSystem.NINJA and \
+            BuildConfig.current_toolchain in (Toolchain.MSVC, Toolchain.CLANG_CL) and \
+            BuildConfig.VCVARSALL_PATH:
         env = setup_msvc_environment()
 
     # Выполняем генерацию
@@ -181,6 +220,7 @@ def generate_project():
         print(f"\n✓ Project generated: {BuildConfig.get_build_folder()}/")
         print(f"  Generator: {BuildConfig.get_cmake_generator()}")
         print(f"  Configuration: {BuildConfig.current_configuration.value}")
+        print(f"  Toolchain: {BuildConfig.current_toolchain.value}")
     else:
         print(f"\n✗ Ошибка генерации проекта")
 
@@ -189,9 +229,9 @@ def generate_project():
 
 def build_project():
     """Собирает проект CMake"""
-    print("="*70)
+    print("=" * 70)
     print(f"СБОРКА ПРОЕКТА ({BuildConfig.current_configuration.value})")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # Проверяем наличие папки сборки
@@ -206,16 +246,18 @@ def build_project():
     if not command:
         return False
 
-    # Настраиваем окружение для MSVC если нужно
+    # Настраиваем окружение
     env = os.environ.copy()
-    if BuildConfig.current_build_system == BuildSystem.NINJA and BuildConfig.VCVARSALL_PATH:
+    if BuildConfig.current_build_system == BuildSystem.NINJA and \
+            BuildConfig.current_toolchain in (Toolchain.MSVC, Toolchain.CLANG_CL) and \
+            BuildConfig.VCVARSALL_PATH:
         env = setup_msvc_environment()
 
     # Выполняем сборку
     success = run_command(command, cwd=BuildConfig.PROJECT_ROOT, env=env)
 
     if success:
-        exe_path = build_folder / "bin" / BuildConfig.EXECUTABLE_NAME
+        exe_path = build_folder / "bin" / BuildConfig.get_executable_name()
         print(f"\n✓ Проект собран успешно!")
         print(f"  Конфигурация: {BuildConfig.current_configuration.value}")
         if exe_path.exists():
@@ -228,9 +270,9 @@ def build_project():
 
 def rebuild_project():
     """Пересобирает проект (clean + generate + build)"""
-    print("="*70)
+    print("=" * 70)
     print(f"ПЕРЕСБОРКА ПРОЕКТА ({BuildConfig.current_configuration.value})")
-    print("="*70)
+    print("=" * 70)
     print()
 
     # Очищаем
@@ -249,16 +291,16 @@ def rebuild_project():
 def run_executable():
     """Запускает исполняемый файл"""
     build_folder = BuildConfig.PROJECT_ROOT / BuildConfig.get_build_folder()
-    exe_path = build_folder / "bin" / BuildConfig.EXECUTABLE_NAME
+    exe_path = build_folder / "bin" / BuildConfig.get_executable_name()
 
     if not exe_path.exists():
         print(f"✗ Executable not found: {exe_path}")
         print(f"  Build the project first!")
         return False
 
-    print("="*70)
+    print("=" * 70)
     print(f"ЗАПУСК {BuildConfig.EXECUTABLE_NAME}")
-    print("="*70)
+    print("=" * 70)
     print()
 
     return run_command(f'"{exe_path}"', cwd=BuildConfig.PROJECT_ROOT)
@@ -287,9 +329,9 @@ def get_source_files(source_dirs, extensions):
 
 def run_clang_format():
     """Apply clang-format to source files"""
-    print("="*70)
+    print("=" * 70)
     print("CODE FORMATTING (CLANG-FORMAT)")
-    print("="*70)
+    print("=" * 70)
     print()
 
     extensions = ['.cpp', '.h', '.hpp', '.c']
@@ -328,4 +370,3 @@ def run_clang_format():
         print('\n✗ Formatting error')
 
     return success
-

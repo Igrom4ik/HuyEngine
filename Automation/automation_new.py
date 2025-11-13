@@ -4,10 +4,20 @@ Enhanced build automation system with interactive menu support
 """
 
 import argparse
+import io
 import sys
 
+# Fix Unicode output for Windows console
+if sys.platform == "win32":
+    try:
+        # Set UTF-8 encoding for stdout and stderr
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 try:
-    from .build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, ToolPaths
+    from .build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, Toolchain, ToolPaths
     from .build_actions import (
         generate_project, build_project, rebuild_project,
         clean_build_folder, clean_all_build_folders,
@@ -15,7 +25,7 @@ try:
     )
     from .build_menu import BuildMenu
 except ImportError:
-    from build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, ToolPaths
+    from build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, Toolchain, ToolPaths
     from build_actions import (
         generate_project, build_project, rebuild_project,
         clean_build_folder, clean_all_build_folders,
@@ -93,6 +103,14 @@ Usage examples:
         help="Target platform"
     )
 
+    # Toolchain
+    parser.add_argument(
+        '-t', '--toolchain',
+        type=str,
+        choices=['msvc', 'clang-cl', 'mingw'],
+        help="Compiler toolchain"
+    )
+
     # Options
     parser.add_argument(
         '--verbose',
@@ -151,6 +169,15 @@ def apply_arguments(args):
         }
         BuildConfig.current_platform = platform_map[args.platform]
 
+    # Toolchain
+    if args.toolchain:
+        tc_map = {
+            'msvc': Toolchain.MSVC,
+            'clang-cl': Toolchain.CLANG_CL,
+            'mingw': Toolchain.MINGW_GCC,
+        }
+        BuildConfig.current_toolchain = tc_map[args.toolchain]
+
     # Options
     if args.verbose:
         BuildConfig.verbose = True
@@ -161,14 +188,15 @@ def apply_arguments(args):
 
 def print_config():
     """Print current configuration"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("HUYENGINE BUILD AUTOMATION")
-    print("="*70)
+    print("=" * 70)
     print(f"\nConfiguration:")
     print(f"  IDE:           {BuildConfig.current_ide.value}")
     print(f"  Build System:  {BuildConfig.current_build_system.value}")
     print(f"  Configuration: {BuildConfig.current_configuration.value}")
     print(f"  Platform:      {BuildConfig.current_platform.value}")
+    print(f"  Toolchain:     {BuildConfig.current_toolchain.value}")
     print(f"  Build Folder:  {BuildConfig.get_build_folder()}")
     print()
 
@@ -226,6 +254,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n✗ Critical error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-

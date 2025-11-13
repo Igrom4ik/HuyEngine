@@ -1,42 +1,52 @@
-# Build directories
-build/
-cmake-build-*/
-vs-build/
-# IDE directories
-.vs/
-.vscode/
-.idea/
-# CMake files
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-*.cmake.in
-# Compiled files
-*.exe
-*.dll
+# Ignore CMake and build artifacts
+/build/
+/build-*/
+/build-msvc/
+/cmake-build-debug/
+/cmake-build-release/
+/cmake-build-release-event-trace/
+cmake-build*/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/InstallScripts.json
+/TargetDirectories.txt
+/generate.stamp*
+/bin/
+/x64/
+*.vcxproj.user
+*.suo
+*.user
+*.pdb
 *.obj
 *.o
-*.a
-*.lib
-*.so
-*.dylib
-# Log files
+*.ilk
+*.exe
 *.log
-# OS files
-.DS_Store
+*.cache
+/.vs/
+/.idea/
+/.vscode/
+/.PVS-Studio/
+*.bak
+*.tmp
 Thumbs.db
-desktop.ini
+.DS_Store
+
 # Python cache
 __pycache__/
 *.pyc
-*.pyo
-# User configuration
-Automation/user_config.py
-# Build logs
-build.log
-# Temporary files
-*.tmp
-*.bak
-*.swp
-*~
 
+# Ignore packaging and distribution
+dist/
+build-dist/
+
+# Ignore user/editor/project specific files
+*.user
+*.suo
+
+# Keep repo-specific files in root
+!README.md
+
+# Keep docs in repo (moved to docs/)
+!docs/

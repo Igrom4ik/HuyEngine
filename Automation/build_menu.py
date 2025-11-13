@@ -7,9 +7,9 @@ import os
 import sys
 
 try:
-    from .build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, ToolPaths
+    from .build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, Toolchain, ToolPaths
 except ImportError:
-    from build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, ToolPaths
+    from build_config import BuildConfig, IDE, BuildSystem, Configuration, Platform, Toolchain, ToolPaths
 
 
 class Colors:
@@ -42,6 +42,7 @@ class Colors:
 if sys.platform == "win32":
     try:
         import ctypes
+
         kernel32 = ctypes.windll.kernel32
         # Включаем ANSI escape sequences
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)  # type: ignore
@@ -54,7 +55,10 @@ class BuildMenu:
 
     def __init__(self):
         self.running = True
+        self.BACK_TOKEN = "__BACK__"
         ToolPaths.initialize_tools()
+        # Загружаем сохранённое состояние, если есть
+        BuildConfig.load_state()
 
     def clear_screen(self):
         """Очищает экран"""
@@ -62,17 +66,21 @@ class BuildMenu:
 
     def print_header(self):
         """Выводит заголовок"""
-        print(f"{Colors.BOLD}{Colors.OKCYAN}{'='*70}{Colors.ENDC}")
+        print(f"{Colors.BOLD}{Colors.OKCYAN}{'=' * 70}{Colors.ENDC}")
         print(f"{Colors.BOLD}{Colors.OKCYAN}{'HuyEngine - Build Automation Menu':^70}{Colors.ENDC}")
-        print(f"{Colors.BOLD}{Colors.OKCYAN}{'='*70}{Colors.ENDC}\n")
+        print(f"{Colors.BOLD}{Colors.OKCYAN}{'=' * 70}{Colors.ENDC}\n")
 
     def print_current_config(self):
         """Print current configuration"""
         print(f"{Colors.BOLD}Current configuration:{Colors.ENDC}")
+        print(f"  Project name:   {Colors.OKGREEN}{BuildConfig.get_project_name()}{Colors.ENDC}")
+        print(f"  C++ standard:   {Colors.OKGREEN}{BuildConfig.get_cxx_standard()}{Colors.ENDC}")
+        print(f"  CMake minimum:  {Colors.OKGREEN}{BuildConfig.get_cmake_minimum_version()}{Colors.ENDC}")
         print(f"  IDE:           {Colors.OKGREEN}{BuildConfig.current_ide.value}{Colors.ENDC}")
         print(f"  Build System:  {Colors.OKGREEN}{BuildConfig.current_build_system.value}{Colors.ENDC}")
         print(f"  Configuration: {Colors.OKGREEN}{BuildConfig.current_configuration.value}{Colors.ENDC}")
         print(f"  Platform:      {Colors.OKGREEN}{BuildConfig.current_platform.value}{Colors.ENDC}")
+        print(f"  Toolchain:     {Colors.OKGREEN}{BuildConfig.current_toolchain.value}{Colors.ENDC}")
         print(f"  Build Folder:  {Colors.OKGREEN}{BuildConfig.get_build_folder()}{Colors.ENDC}")
         print()
 
@@ -94,18 +102,35 @@ class BuildMenu:
         print(f"  MSVC:   {vs_status}")
         if BuildConfig.CXX_COMPILER:
             print(f"          {BuildConfig.CXX_COMPILER}")
+
+        clang_status = f"{Colors.OKGREEN}✓ Найден{Colors.ENDC}" if BuildConfig.CLANG_CL_PATH or BuildConfig.CLANGXX_PATH else f"{Colors.FAIL}✗ Не найден{Colors.ENDC}"
+        print(f"  LLVM:   {clang_status}")
+        if BuildConfig.CLANG_CL_PATH:
+            print(f"          clang-cl: {BuildConfig.CLANG_CL_PATH}")
+        if BuildConfig.CLANGXX_PATH:
+            print(f"          clang++:  {BuildConfig.CLANGXX_PATH}")
+
+        mingw_status = f"{Colors.OKGREEN}✓ Найден{Colors.ENDC}" if BuildConfig.GCC_PATH and BuildConfig.GPP_PATH else f"{Colors.FAIL}✗ Не найден{Colors.ENDC}"
+        print(f"  MinGW:  {mingw_status}")
+        if BuildConfig.GCC_PATH:
+            print(f"          gcc:  {BuildConfig.GCC_PATH}")
+        if BuildConfig.GPP_PATH:
+            print(f"          g++:  {BuildConfig.GPP_PATH}")
         print()
 
     def select_from_enum(self, enum_class, prompt):
-        """Select value from enum"""
+        """Select value from enum (supports '0. Back')"""
         print(f"\n{Colors.BOLD}{prompt}{Colors.ENDC}")
         options = list(enum_class)
+        print("  0. Back")
         for i, option in enumerate(options, 1):
             print(f"  {i}. {option.value}")
 
         while True:
             try:
-                choice = input(f"\n{Colors.OKCYAN}Select option (1-{len(options)}): {Colors.ENDC}").strip()
+                choice = input(f"\n{Colors.OKCYAN}Select option (0-{len(options)}): {Colors.ENDC}").strip()
+                if choice == "0":
+                    return self.BACK_TOKEN
                 if not choice:
                     return None
                 idx = int(choice) - 1
@@ -116,7 +141,7 @@ class BuildMenu:
             except ValueError:
                 print(f"{Colors.FAIL}Enter a number.{Colors.ENDC}")
             except KeyboardInterrupt:
-                return None
+                return self.BACK_TOKEN
 
     def menu_configure(self):
         """Configuration menu"""
@@ -126,25 +151,82 @@ class BuildMenu:
 
         # Select IDE
         ide = self.select_from_enum(IDE, "Select IDE:")
+        if ide == self.BACK_TOKEN:
+            return
         if ide:
             BuildConfig.current_ide = ide
 
         # Select build system
         build_sys = self.select_from_enum(BuildSystem, "Select build system:")
+        if build_sys == self.BACK_TOKEN:
+            return
         if build_sys:
             BuildConfig.current_build_system = build_sys
 
         # Select configuration
         config = self.select_from_enum(Configuration, "Select configuration:")
+        if config == self.BACK_TOKEN:
+            return
         if config:
             BuildConfig.current_configuration = config
 
         # Select platform
         platform = self.select_from_enum(Platform, "Select platform:")
+        if platform == self.BACK_TOKEN:
+            return
         if platform:
             BuildConfig.current_platform = platform
 
+        # Select toolchain
+        toolchain = self.select_from_enum(Toolchain, "Select toolchain (compiler):")
+        if toolchain == self.BACK_TOKEN:
+            return
+        if toolchain:
+            BuildConfig.current_toolchain = toolchain
+
+        # Prompt for project name
+        try:
+            proj = input(
+                f"\n{Colors.OKCYAN}Project name (leave empty to keep '{BuildConfig.PROJECT_NAME}'): {Colors.ENDC}").strip()
+            if proj == "0":
+                return
+            if proj:
+                BuildConfig.PROJECT_NAME = proj
+        except KeyboardInterrupt:
+            return
+
+        # Prompt for C++ standard
+        try:
+            std_in = input(
+                f"\n{Colors.OKCYAN}C++ standard (default {BuildConfig.CXX_STANDARD}, e.g. 17/20/23, or 0 to Back): {Colors.ENDC}").strip()
+            if std_in == "0":
+                return
+            if std_in:
+                try:
+                    val = int(std_in)
+                    BuildConfig.CXX_STANDARD = val
+                except ValueError:
+                    print(f"{Colors.WARNING}Invalid number, keeping {BuildConfig.CXX_STANDARD}.{Colors.ENDC}")
+        except KeyboardInterrupt:
+            return
+
+        # Prompt for CMake minimum version
+        try:
+            cmv = input(
+                f"\n{Colors.OKCYAN}CMake minimum required (default {BuildConfig.CMAKE_MINIMUM_VERSION}): {Colors.ENDC}").strip()
+            if cmv == "0":
+                return
+            if cmv:
+                BuildConfig.CMAKE_MINIMUM_VERSION = cmv
+        except KeyboardInterrupt:
+            return
+
         print(f"\n{Colors.OKGREEN}✓ Configuration updated!{Colors.ENDC}")
+        # Сохраняем состояние после обновления
+        if BuildConfig.save_state():
+            print(f"{Colors.OKGREEN}✓ Configuration saved.{Colors.ENDC}")
+        else:
+            print(f"{Colors.WARNING}⚠ Failed to save configuration.{Colors.ENDC}")
         input(f"\n{Colors.OKCYAN}Press Enter to continue...{Colors.ENDC}")
 
     def menu_build_actions(self):
@@ -329,4 +411,3 @@ class BuildMenu:
 if __name__ == "__main__":
     menu = BuildMenu()
     menu.run()
-
