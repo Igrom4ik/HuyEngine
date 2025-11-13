@@ -242,6 +242,7 @@ class BuildMenu:
         print("  4. Clean (Clean current folder)")
         print("  5. Clean All (Clean all build folders)")
         print("  6. Run (Run executable)")
+        print("  7. Generate VS Solution (Quick)")
         print("  0. Back")
 
         choice = input(f"\n{Colors.OKCYAN}Select action: {Colors.ENDC}").strip()
@@ -258,6 +259,8 @@ class BuildMenu:
             self.action_clean_all()
         elif choice == "6":
             self.action_run()
+        elif choice == "7":
+            self.action_generate_vs_solution()
         elif choice == "0":
             return
         else:
@@ -332,6 +335,44 @@ class BuildMenu:
         run_executable()
 
         input(f"\n{Colors.OKCYAN}Press Enter to continue...{Colors.ENDC}")
+
+    def action_generate_vs_solution(self):
+        """Быстрая генерация Visual Studio solution"""
+        print(f"\n{Colors.OKBLUE}→ Генерация Visual Studio solution...{Colors.ENDC}\n")
+
+        # Сохраняем текущие настройки
+        saved_ide = BuildConfig.current_ide
+        saved_build_sys = BuildConfig.current_build_system
+
+        # Временно переключаем на VS
+        BuildConfig.current_ide = IDE.VISUAL_STUDIO
+        BuildConfig.current_build_system = BuildSystem.MSBUILD
+
+        from build_actions import generate_project
+        success = generate_project()
+
+        # Восстанавливаем настройки
+        BuildConfig.current_ide = saved_ide
+        BuildConfig.current_build_system = saved_build_sys
+
+        if success:
+            sln_path = BuildConfig.PROJECT_ROOT / "vs-build" / f"{BuildConfig.get_project_name()}.sln"
+            print(f"\n{Colors.OKGREEN}✓ Visual Studio solution сгенерирован!{Colors.ENDC}")
+            print(f"  Путь: {sln_path}")
+
+            # Предлагаем открыть в Visual Studio
+            try:
+                open_vs = input(f"\n{Colors.OKCYAN}Открыть в Visual Studio? (y/n): {Colors.ENDC}").strip().lower()
+                if open_vs == 'y':
+                    import subprocess
+                    subprocess.Popen(f'start "" "{sln_path}"', shell=True)
+                    print(f"{Colors.OKGREEN}✓ Visual Studio запущен{Colors.ENDC}")
+            except Exception as e:
+                print(f"{Colors.WARNING}⚠ Не удалось открыть VS: {e}{Colors.ENDC}")
+        else:
+            print(f"\n{Colors.FAIL}✗ Ошибка генерации Visual Studio solution{Colors.ENDC}")
+
+        input(f"\n{Colors.OKCYAN}Нажмите Enter для продолжения...{Colors.ENDC}")
 
     def menu_tools(self):
         """Меню инструментов"""

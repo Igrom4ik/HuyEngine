@@ -27,11 +27,11 @@ cmake-build*/
 /.vs/
 /.idea/
 /.vscode/
-/.PVS-Studio/
-*.bak
-*.tmp
-Thumbs.db
-.DS_Store
+# Keep VSCode project configuration
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/c_cpp_properties.json
+!/.vscode/settings.json
 
 # Python cache
 __pycache__/

@@ -1,0 +1,7 @@
+#pragma once
+
+#define Engine_VERSION_MAJOR @HuyEngine_VERSION_MAJOR@
+#define Engine_VERSION_MINOR @HuyEngine_VERSION_MINOR@
+#define Engine_VERSION_PATCH @HuyEngine_VERSION_PATCH@
+#define Engine_VERSION_STRING "@HuyEngine_VERSION@"
+

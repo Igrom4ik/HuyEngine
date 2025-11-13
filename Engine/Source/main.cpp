@@ -1,16 +1,14 @@
 // ============================================================================
 // main.cpp - HuyEngine Application Entry Point
 // ============================================================================
-
-import Engine;
+#include <iostream>
+#include "Core/Engine.h"
 
 int main() {
-    // Call function from module
     HuyEngine::SayHello();
 
-    // Use class from module
     HuyEngine::Engine engine;
     engine.Run();
-
+    std::cin.get();
     return 0;
 }
