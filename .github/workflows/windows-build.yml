@@ -1,10 +1,11 @@
 name: Windows Build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "main", "develop" ]
 
 env:
   TARGETS: HuyEngineApp

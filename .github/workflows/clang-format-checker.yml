@@ -1,10 +1,11 @@
 name: Clang-format check
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   formatting-check:
@@ -19,4 +20,3 @@ jobs:
         with:
           clang-format-version: "19"
           check-path: "Engine"
-

@@ -1,10 +1,11 @@
 name: Linux Build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   build-linux:
@@ -62,4 +63,3 @@ jobs:
           path: |
             build/bin/*
           if-no-files-found: error
-

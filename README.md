@@ -254,3 +254,5 @@ CUSTOM_CMAKE_FLAGS = ["-DENABLE_TESTING=ON"]
 <center>
   <em>Документация и дизайн созданы с помощью <strong>GitHub Copilot</strong> 🤖</em>
 </center>
+
+<!-- ci: touch 2025-11-14 -->
