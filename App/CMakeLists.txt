@@ -13,6 +13,7 @@ set(APP_SOURCES
         Source/pch.cpp
         Source/pch.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/EngineConfig.h
+        Source/main.PVS-Studio.i
 )
 
 add_executable(${APP_TARGET} ${APP_SOURCES})
