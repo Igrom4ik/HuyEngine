@@ -14,7 +14,18 @@ param(
     [string]$OutputDir = ".\package\output"
 )
 
-# If version not provided, try to extract from top-level CMakeLists.txt (project(... VERSION x.y.z))
+# If version not provided, try to extract from build/version.txt first
+if ( [string]::IsNullOrEmpty($Version))
+{
+    $possibleVersionFile = Join-Path $root "build\version.txt"
+    if (Test-Path $possibleVersionFile)
+    {
+        Write-Host "Reading version from $possibleVersionFile"
+        $Version = (Get-Content -Path $possibleVersionFile -Raw).Trim()
+    }
+}
+
+# If still not provided, try to extract from top-level CMakeLists.txt (project(... VERSION x.y.z))
 if ( [string]::IsNullOrEmpty($Version))
 {
     try
