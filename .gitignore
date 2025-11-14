@@ -64,4 +64,15 @@ PVS-Studio.reports/
 *.pvslog
 *.pvsconfig
 
+# Ignore common temp/editor files
+*.tmp*
+*~
+*.swp
+*.swo
+
+# Ignore PVS-Studio temporary/generation files often created near sources
+*.PVS-Studio.*
+App/Source/*.PVS-Studio.i
+
+# Keep EngineConfig.h tracked
 EngineConfig.h
