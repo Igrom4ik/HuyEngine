@@ -52,8 +52,14 @@ endif ()
 
 # --- CPack (packaging) ---
 install(TARGETS HuyEngineApp RUNTIME DESTINATION bin)
-# Install package documentation
-install(FILES ${CMAKE_SOURCE_DIR}/PACKAGE_README.md DESTINATION . RENAME README.md)
+# Install package documentation: prefer PACKAGE_README.md (renamed to README.md), fallback to README.md
+if (EXISTS "${CMAKE_SOURCE_DIR}/PACKAGE_README.md")
+    install(FILES "${CMAKE_SOURCE_DIR}/PACKAGE_README.md" DESTINATION . RENAME README.md)
+elseif (EXISTS "${CMAKE_SOURCE_DIR}/README.md")
+    install(FILES "${CMAKE_SOURCE_DIR}/README.md" DESTINATION .)
+else ()
+    message(WARNING "No PACKAGE_README.md or README.md found — package will not contain README")
+endif ()
 
 # Load release-specific CPack defaults (create cmake/CPackReleaseConfig.cmake)
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/CPackReleaseConfig.cmake")
