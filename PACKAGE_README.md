@@ -15,12 +15,14 @@ include/        - Public Engine API headers
 **For End Users (Running Demo):**
 
 - `bin/HuyEngineApp.exe` - Demo application showcasing engine capabilities
-- ✅ **Runs standalone** - No additional files needed
+- ✅ **Runs standalone** - The exe already contains all engine code inside (statically linked)
+- ❌ **Does NOT need** `lib/` or `include/` folders to run
 
-**For Game Developers (Building Games):**
+**For Game Developers (Building YOUR game with HuyEngine):**
 
-- `lib/libHuyEngineLib.a` - Engine library to link against
-- `include/HuyEngine/` - Engine API headers for development
+- `lib/libHuyEngineLib.a` - Engine library to link your game against
+- `include/HuyEngine/` - Engine API headers to use in your game code
+- ❌ **Does NOT need** `bin/` folder (that's just a demo)
 
 ## 🚀 Quick Start
 
@@ -84,18 +86,41 @@ int main() {
 
 ## 🎮 Usage Scenarios
 
-### Scenario 1: Just Want to See the Demo
+### Scenario 1: Just Want to Run the Demo
+
+**You are an END USER (player):**
 
 ✅ **Only need**: `bin/HuyEngineApp.exe`  
-📁 Can delete: `lib/` and `include/` folders
+❌ **Can delete**: `lib/` and `include/` folders (not used at runtime)
 
-### Scenario 2: Developing a Game
+```bash
+# Just run it:
+cd bin
+./HuyEngineApp.exe
+# That's it! The exe contains everything inside.
+```
 
-✅ **Need everything**:
+### Scenario 2: Developing Your Own Game
 
-- `lib/` - to link your game against the engine
-- `include/` - to access engine API in your code
-- `bin/` - optional (demo/reference)
+**You are a GAME DEVELOPER:**
+
+✅ **Only need**: `lib/` + `include/`  
+❌ **Can delete**: `bin/` folder (just a demo, not needed for development)
+
+**Why you need headers:**
+
+- Your game's `.cpp` files `#include <HuyEngine/Core/Engine.hpp>` to use the API
+- Compiler needs headers to understand engine functions
+- Linker needs `lib/libHuyEngineLib.a` to include engine code in YOUR game
+
+**What happens:**
+
+```
+Your code (.cpp) + Headers (.hpp) → Compiler → Your game (.obj)
+Your game (.obj) + Library (.a) → Linker → YourGame.exe
+```
+
+Your final `YourGame.exe` will also be **standalone** (statically linked), just like our demo.
 
 ## 🛠️ System Requirements
 
