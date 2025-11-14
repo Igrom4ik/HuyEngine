@@ -22,6 +22,6 @@ target_include_directories(${APP_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Sou
 # folders
 set_target_properties(${APP_TARGET} PROPERTIES FOLDER App)
 
-include(${CMAKE_SOURCE_DIR}/Automation/CMAKE/CMakeHelpers.cmake)
+include(${CMAKE_SOURCE_DIR}/Automation/CMAKE/CmakeHelpers.cmake)
 create_ide_folders(APP_SOURCES)
 setup_precompiled_headers(${APP_TARGET} Source/pch.cpp Source/pch.hpp "${APP_SOURCES}")

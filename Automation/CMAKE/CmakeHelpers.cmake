@@ -71,3 +71,4 @@ macro(create_ide_folders SOURCE_FILES)
         source_group("${GROUP_PATH}" FILES "${SOURCE}")
     endforeach ()
 endmacro()
+
