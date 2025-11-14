@@ -2,9 +2,9 @@ name: Windows Build
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master", "develop" ]
+    branches: [ "main" ]
 
 env:
   TARGETS: HuyEngineApp
