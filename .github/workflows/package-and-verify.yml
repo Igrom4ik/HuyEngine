@@ -40,6 +40,7 @@ jobs:
             echo "Configuring without explicit version (use project() default)"
             cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/staging
           fi
+        shell: bash
 
       - name: Build
         run: cmake --build build --config Release --parallel
