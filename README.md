@@ -1,9 +1,9 @@
 # HuyEngine
 
 [![Документация: GitHub Copilot](https://img.shields.io/badge/Документация-GitHub%20Copilot-blue?logo=github)](https://github.com/features/copilot)
-[![Windows Build](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/windows-build.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/windows-build.yml)
-[![Linux Build](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/linux-build.yml)
-[![Clang-format check](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/clang-format-checker.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/clang-format-checker.yml)
+[![Windows Build](https://github.com/Igrom4ik/HuyEngine/actions/workflows/windows-build.yml/badge.svg)](https://github.com/Igrom4ik/HuyEngine/actions/workflows/windows-build.yml)
+[![Linux Build](https://github.com/Igrom4ik/HuyEngine/actions/workflows/linux-build.yml/badge.svg)](https://github.com/Igrom4ik/HuyEngine/actions/workflows/linux-build.yml)
+[![Clang-format check](https://github.com/Igrom4ik/HuyEngine/actions/workflows/clang-format-checker.yml/badge.svg)](https://github.com/Igrom4ik/HuyEngine/actions/workflows/clang-format-checker.yml)
 
 Custom Game Engine built with C++ and CMake.
 
