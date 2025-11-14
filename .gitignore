@@ -76,3 +76,10 @@ App/Source/*.PVS-Studio.i
 
 # Keep EngineConfig.h tracked
 EngineConfig.h
+
+# Local validation/build/test folders
+build_validate/
+build_validate*/
+staging/
+pkg_extract/
+package/

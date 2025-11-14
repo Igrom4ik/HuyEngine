@@ -6,38 +6,47 @@ Modern C++ Game Engine for high-performance game development.
 
 ```
 bin/            - Demo application & runtime
-lib/            - Engine static library for game projects
-include/        - Public Engine API headers
+lib/            - Engine library (binaries) for game projects
+README.md       - Short instructions and license reference
 ```
 
 ### File Purpose
 
-**For End Users (Running Demo):**
+**Release Binary Package (what you get when downloading the runtime ZIP):**
 
 - `bin/HuyEngineApp.exe` - Demo application showcasing engine capabilities
-- ✅ **Runs standalone** - The exe already contains all engine code inside (statically linked)
-- ❌ **Does NOT need** `lib/` or `include/` folders to run
+- `lib/` - Engine library files (.lib/.a/.dll as appropriate)
+- `README.md` - Short instructions and license
+
+> Important: the release binary package intentionally DOES NOT include source files (.cpp) or
+> header files (.h/.hpp). Source code and headers belong to the Source Code/SDK distribution only.
+
+### File Purpose (detailed)
+
+**For End Users (Running Demo):**
+
+- `bin/HuyEngineApp.exe` - Demo application that runs using the engine binaries
+- ✅ **Runs with the provided binaries** - No need for headers or source files in the runtime package
 
 **For Game Developers (Building YOUR game with HuyEngine):**
 
-- `lib/libHuyEngineLib.a` - Engine library to link your game against
-- `include/HuyEngine/` - Engine API headers to use in your game code
-- ❌ **Does NOT need** `bin/` folder (that's just a demo)
+- Use the separate Source Code / SDK distribution which contains `include/` and full sources.
+- The development package contains:
+    - `include/HuyEngine/` - Public headers
+    - `lib/` - Static/import libraries for linking
 
 ## 🚀 Quick Start
 
-### Running the Demo
+### Running the Demo (from release binary package)
 
-```bash
+```powershell
 cd bin
-./HuyEngineApp.exe
+.\HuyEngineApp.exe
 ```
 
-The executable is **statically linked** and runs independently.
+The executable uses only binary libraries from `lib/` and does not require headers at runtime.
 
-### Building Your Game with HuyEngine
-
-#### Option 1: CMake (Recommended)
+### Building Your Game with HuyEngine (requires SDK / source package)
 
 ```cmake
 cmake_minimum_required(VERSION 3.20)
@@ -45,24 +54,13 @@ project(MyGame)
 
 set(CMAKE_CXX_STANDARD 23)
 
-# Point to HuyEngine SDK
-set(HUYENGINE_ROOT "/path/to/HuyEngine-1.0.0-Windows")
+# Point to HuyEngine SDK (contains include/ and lib/)
+set(HUYENGINE_ROOT "/path/to/HuyEngine-SDK-1.0.0-Windows")
 include_directories(${HUYENGINE_ROOT}/include)
 link_directories(${HUYENGINE_ROOT}/lib)
 
 add_executable(MyGame src/main.cpp)
 target_link_libraries(MyGame HuyEngineLib)
-```
-
-#### Option 2: Manual Compilation
-
-```bash
-# Compile your game
-g++ -std=c++23 my_game.cpp \
-    -I/path/to/HuyEngine/include \
-    -L/path/to/HuyEngine/lib \
-    -lHuyEngineLib \
-    -o MyGame.exe
 ```
 
 ### Example Game Code
@@ -77,50 +75,9 @@ int main() {
     
     std::cout << "HuyEngine v" << engine.version() << std::endl;
     
-    // Your game loop here
-    // engine.run();
-    
     return 0;
 }
 ```
-
-## 🎮 Usage Scenarios
-
-### Scenario 1: Just Want to Run the Demo
-
-**You are an END USER (player):**
-
-✅ **Only need**: `bin/HuyEngineApp.exe`  
-❌ **Can delete**: `lib/` and `include/` folders (not used at runtime)
-
-```bash
-# Just run it:
-cd bin
-./HuyEngineApp.exe
-# That's it! The exe contains everything inside.
-```
-
-### Scenario 2: Developing Your Own Game
-
-**You are a GAME DEVELOPER:**
-
-✅ **Only need**: `lib/` + `include/`  
-❌ **Can delete**: `bin/` folder (just a demo, not needed for development)
-
-**Why you need headers:**
-
-- Your game's `.cpp` files `#include <HuyEngine/Core/Engine.hpp>` to use the API
-- Compiler needs headers to understand engine functions
-- Linker needs `lib/libHuyEngineLib.a` to include engine code in YOUR game
-
-**What happens:**
-
-```
-Your code (.cpp) + Headers (.hpp) → Compiler → Your game (.obj)
-Your game (.obj) + Library (.a) → Linker → YourGame.exe
-```
-
-Your final `YourGame.exe` will also be **standalone** (statically linked), just like our demo.
 
 ## 🛠️ System Requirements
 
@@ -136,19 +93,6 @@ Your final `YourGame.exe` will also be **standalone** (statically linked), just 
 - CMake 3.20+ (recommended)
 - Ninja build system (optional)
 
-## 📚 Engine Features
-
-- Modern C++23 architecture
-- Cross-platform (Windows/Linux)
-- Lightweight core
-- Extensible module system
-
-## 🔗 Resources
-
-- **GitHub Repository**: https://github.com/Igrom4ik/HuyEngine
-- **Documentation**: https://github.com/Igrom4ik/HuyEngine/wiki
-- **Issues & Support**: https://github.com/Igrom4ik/HuyEngine/issues
-
 ## 📄 License
 
 See LICENSE file in the repository.
@@ -156,4 +100,3 @@ See LICENSE file in the repository.
 ---
 
 **HuyEngine** - Built for performance, designed for creativity.
-
