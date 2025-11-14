@@ -60,7 +60,7 @@ class BuildConfig:
     CXX_STANDARD = 20
 
     # CMake minimum required version (can be set in menu)
-    CMAKE_MINIMUM_VERSION = "4.2.0"
+    CMAKE_MINIMUM_VERSION = "3.31.6"
 
     # Executable name (legacy default); prefer get_executable_name() in code
     EXECUTABLE_NAME = "HuyEngine.exe"

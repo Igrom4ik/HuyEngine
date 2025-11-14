@@ -37,7 +37,7 @@ Automation\build.bat run        # Run
 
 ### Prerequisites
 
-- CMake 3.15+
+- CMake 3.31.6+
 - Python 3.6+
 - Visual Studio 2019/2022 (MSVC)
 - Ninja (optional, recommended for speed)
