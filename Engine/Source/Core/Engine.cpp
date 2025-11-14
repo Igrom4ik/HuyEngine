@@ -3,6 +3,7 @@
 
 using namespace HuyEngine;
 
-Engine::Engine() {
+Engine::Engine()
+{
     std::cout << "Hello, I'm HuyEngine v" << version() << std::endl;
 }
