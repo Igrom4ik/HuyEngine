@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
+    tags: [ 'v*' ]
 
 jobs:
   package:
@@ -17,9 +18,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set version (from tag if present)
+        id: set_version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME=${{ github.ref_name }}
+            # strip leading v
+            TAG_NAME=${TAG_NAME#v}
+            echo "version=${TAG_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
       - name: Configure
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/staging
+          if [ -n "${{ steps.set_version.outputs.version }}" ]; then
+            echo "Configuring with version ${{ steps.set_version.outputs.version }}"
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHuyEngine_VERSION=${{ steps.set_version.outputs.version }} -DCPACK_PACKAGE_VERSION=${{ steps.set_version.outputs.version }} -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/staging
+          else
+            echo "Configuring without explicit version (use project() default)"
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/staging
+          fi
 
       - name: Build
         run: cmake --build build --config Release --parallel
@@ -81,4 +101,3 @@ jobs:
           path: |
             build/*.zip
             build/package/*.zip
-

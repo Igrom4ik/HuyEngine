@@ -7,16 +7,18 @@ if (NOT DEFINED CPACK_PACKAGE_NAME)
 endif ()
 
 if (NOT DEFINED CPACK_PACKAGE_VERSION)
-    # Prefer a PROJECT_VERSION if set, otherwise default to 1.0.0
-    if (DEFINED PROJECT_VERSION)
+    # Prefer HuyEngine_VERSION (set in top-level CMake), then PROJECT_VERSION, otherwise default to 1.0.0
+    if (DEFINED HuyEngine_VERSION)
+        set(CPACK_PACKAGE_VERSION "${HuyEngine_VERSION}" CACHE STRING "CPack package version")
+    elseif (DEFINED PROJECT_VERSION)
         set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}" CACHE STRING "CPack package version")
     else ()
         set(CPACK_PACKAGE_VERSION "1.0.0" CACHE STRING "CPack package version")
     endif ()
 endif ()
 
-# Use ZIP generator by default (can be overridden)
-set(CPACK_GENERATOR "ZIP" CACHE STRING "CPack generator")
+# Use ZIP and TGZ generator by default (can be overridden)
+set(CPACK_GENERATOR "ZIP;TGZ" CACHE STRING "CPack generator")
 
 # Ensure CMakeInstallPrefix exists — default to <binary>/install if not set
 if (NOT DEFINED CMAKE_INSTALL_PREFIX)
