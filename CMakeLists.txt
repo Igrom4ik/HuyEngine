@@ -31,6 +31,14 @@ else ()
     message(WARNING "Optional CMake helpers not found: ${_helpers_path}. Continuing without it.")
 endif ()
 
+# Generate version.txt in build directory for scripts/CI to read
+if (NOT DEFINED HuyEngine_VERSION)
+    set(HuyEngine_VERSION ${PROJECT_VERSION})
+endif ()
+if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/version.txt.in")
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/version.txt.in ${CMAKE_BINARY_DIR}/version.txt @ONLY)
+endif ()
+
 # --- CPack (packaging) ---
 install(TARGETS HuyEngineApp RUNTIME DESTINATION bin)
 # Install package documentation

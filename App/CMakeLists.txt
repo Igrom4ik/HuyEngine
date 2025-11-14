@@ -8,6 +8,12 @@ set(HuyEngine_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(HuyEngine_VERSION ${PROJECT_VERSION})
 configure_file(EngineConfig.h.template ${CMAKE_CURRENT_BINARY_DIR}/EngineConfig.h)
 
+# Generate application version header from template
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Version.h.in")
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Source/Version.h.in ${CMAKE_CURRENT_BINARY_DIR}/Version.h)
+    list(APPEND APP_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/Version.h)
+endif ()
+
 set(APP_SOURCES
         Source/main.cpp
         Source/pch.cpp
