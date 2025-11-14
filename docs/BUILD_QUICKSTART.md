@@ -5,7 +5,7 @@
 ### Интерактивное меню (рекомендуется для новичков)
 
 ```powershell
-.\build.bat
+.\Automation\build.bat
 ```
 
 Или напрямую через Python:
@@ -18,22 +18,22 @@ python Automation\automation_new.py
 
 ```powershell
 # Генерация проекта
-.\build.bat generate
+.\Automation\build.bat generate
 
 # Сборка
-.\build.bat build
+.\Automation\build.bat build
 
 # Пересборка
-.\build.bat rebuild
+.\Automation\build.bat rebuild
 
 # Запуск
-.\build.bat run
+.\Automation\build.bat run
 
 # Очистка всех папок сборки
-.\build.bat clean-all
+.\Automation\build.bat clean-all
 
 # Очистка текущей папки сборки
-.\build.bat clean
+.\Automation\build.bat clean
 ```
 
 ## 🎯 Для разных IDE
@@ -42,16 +42,16 @@ python Automation\automation_new.py
 
 ```powershell
 # Генерация и открытие в Visual Studio
-.\build.bat generate --ide vs --build-system msbuild
+.\Automation\build.bat generate --ide vs --build-system msbuild
 
-# Или через меню: .\build.bat -> Конфигурация -> Visual Studio -> MSBuild
+# Или через меню: .\Automation\build.bat -> Конфигурация -> Visual Studio -> MSBuild
 ```
 
 ### CLion
 
 ```powershell
 # Генерация для CLion
-.\build.bat generate --ide clion --config debug
+.\Automation\build.bat generate --ide clion --config debug
 
 # CLion автоматически использует cmake-build-* папки
 ```
@@ -60,7 +60,7 @@ python Automation\automation_new.py
 
 ```powershell
 # Самый быстрый вариант
-.\build.bat rebuild --build-system ninja --config release
+.\Automation\build.bat rebuild --build-system ninja --config release
 ```
 
 ## 🔧 CMake Presets (альтернативный метод)
@@ -83,13 +83,11 @@ cmake --build --preset reliz-vs
 
 **Доступные пресеты:**
 
-- `otladka` - Отладка (Ninja) → `build/`
+- `otladka` - Отладка (Ninja) → `cmake-build-debug/`
 - `reliz` - Релиз (Ninja) → `cmake-build-release/`
-- `otladka-vs` - Отладка (Visual Studio) → `build-vs/`
-- `reliz-vs` - Релиз (Visual Studio) → `cmake-build-release-vs/`
 
-> ⚠️ **Важно**: Для пресетов с Ninja (`otladka`, `reliz`) требуется запуск из **Developer Command Prompt for VS 2022**
-> или используйте `.\build.bat`, который автоматически настраивает окружение!
+> ⚠️ **Важно**: Для пресетов с Ninja требуется запуск из **Developer Command Prompt for VS 2022**
+> или используйте `.\Automation\build.bat`, который автоматически настраивает окружение!
 
 ## 📖 Полная документация
 
@@ -98,32 +96,35 @@ cmake --build --preset reliz-vs
 ## ⌨️ Справка
 
 ```powershell
-.\build.bat --help
+.\Automation\build.bat --help
 python Automation\automation_new.py --help
 ```
 
 ## 🔧 Структура команд
 
 ```
-.\build.bat [действие] [опции]
+.\Automation\build.bat [действие] [опции]
 
 Действия:
   generate    - Генерация проекта
   build       - Сборка
   rebuild     - Пересборка
-  clean       - Очистка
-  clean-all   - Очистка всех папок
-  run         - Запуск
-  format      - Форматирование кода
-  menu        - Меню (по умолчанию)
+```
+
+clean - Очистка
+clean-all - Очистка всех папок
+run - Запуск
+format - Форматирование кода
+menu - Меню (по умолчанию)
 
 Опции:
-  -i, --ide           IDE (vs, clion, vscode, manual)
-  -b, --build-system  Система сборки (ninja, msbuild, make)
-  -c, --config        Конфигурация (debug, release, etc.)
-  -p, --platform      Платформа (x64, win32, arm64)
-  --verbose           Подробный вывод
-  --no-clean          Не очищать перед сборкой
+-i, --ide IDE (vs, clion, vscode, manual)
+-b, --build-system Система сборки (ninja, msbuild, make)
+-c, --config Конфигурация (debug, release, etc.)
+-p, --platform Платформа (x64, win32, arm64)
+--verbose Подробный вывод
+--no-clean Не очищать перед сборкой
+
 ```
 
 ## 🆕 Что нового

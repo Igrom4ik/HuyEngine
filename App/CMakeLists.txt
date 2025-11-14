@@ -1,27 +1,26 @@
-# App subproject (executable)
-
+# common options
 set(APP_TARGET HuyEngineApp)
 
-# Version header generation
-configure_file(EngineConfig.h.template ${CMAKE_CURRENT_SOURCE_DIR}/Source/EngineConfig.h)
+# version
+set(HuyEngine_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(HuyEngine_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(HuyEngine_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(HuyEngine_VERSION ${PROJECT_VERSION})
+configure_file(EngineConfig.h.template ${CMAKE_CURRENT_BINARY_DIR}/EngineConfig.h)
 
 set(APP_SOURCES
         Source/main.cpp
         Source/pch.cpp
         Source/pch.hpp
-        Source/EngineConfig.h
+        ${CMAKE_CURRENT_BINARY_DIR}/EngineConfig.h
 )
 
 add_executable(${APP_TARGET} ${APP_SOURCES})
+target_link_libraries(${APP_TARGET} PRIVATE ${PROJECT_NAME}Lib)
+target_include_directories(${APP_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source ${CMAKE_CURRENT_BINARY_DIR})
 
-# Link with the engine library defined in ../Engine/CMakeLists.txt
-target_link_libraries(${APP_TARGET} PRIVATE HuyEngineLib)
-
-target_include_directories(${APP_TARGET} PRIVATE ${CMAKE_SOURCE_DIR}/Engine/Source ${CMAKE_CURRENT_SOURCE_DIR}/Source)
-
-# IDE folders and grouping (like Engine)
-set_property(TARGET ${APP_TARGET} PROPERTY FOLDER App)
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "Source" FILES ${APP_SOURCES})
+# folders
+set_target_properties(${APP_TARGET} PROPERTIES FOLDER App)
 
 include(${CMAKE_SOURCE_DIR}/Automation/CMAKE/CMakeHelpers.cmake)
 create_ide_folders(APP_SOURCES)

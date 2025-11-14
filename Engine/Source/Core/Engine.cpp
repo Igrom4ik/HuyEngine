@@ -4,5 +4,5 @@
 using namespace HuyEngine;
 
 HuyEngine::Engine::Engine() {
-    std::cout << "Hello HuyEngine Engine" << std::endl;
+    std::cout << "Hellow, I'm HuyEngine v" << version() << std::endl;
 }

@@ -37,6 +37,9 @@ cmake-build*/
 __pycache__/
 *.pyc
 
+# Build state
+Automation/.build_state.json
+
 # Ignore packaging and distribution
 dist/
 build-dist/

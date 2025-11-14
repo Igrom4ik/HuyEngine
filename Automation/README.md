@@ -64,63 +64,69 @@ build.bat run
 ### Первая сборка проекта
 
 ```batch
-build.bat
+Automation\build.bat
 # Выберите: Сборка → Rebuild
 ```
 
 ### Для разработчиков Visual Studio
 
 ```batch
-build.bat generate --ide vs --build-system msbuild
+Automation\build.bat generate --ide vs --build-system msbuild
 start vs-build\HuyEngine.sln
 ```
 
 ### Для разработчиков CLion
 
 ```batch
-build.bat -i clion -c debug generate
+Automation\build.bat -i clion -c debug generate
 # Откройте проект в CLion
 ```
 
 ### Быстрая сборка с Ninja
 
 ```batch
-build.bat -b ninja -c release rebuild
+Automation\build.bat -b ninja -c release rebuild
 ```
 
 ### Форматирование кода
 
 ```batch
-build.bat format
+Automation\build.bat format
 ```
 
 ### Очистка всех артефактов
 
 ```batch
-build.bat clean-all
+Automation\build.bat clean-all
 ```
 
 ## 📁 Структура папок
 
 ```
 HuyEngine/
-├── build.bat                     # Быстрый запуск из корня
-├── BUILD_QUICKSTART.md           # Быстрый старт
+├── CMakeLists.txt                # Корневая конфигурация CMake
+├── CMakePresets.json             # CMake пресеты для прямого использования
 ├── Automation/
-│   ├── automation_new.py         # Главный скрипт
-│   ├── build_config.py           # Конфигурация
+│   ├── build.bat                 # Главный launcher для Windows
+│   ├── build_menu.bat            # Launcher интерактивного меню
+│   ├── automation_new.py         # Главный скрипт автоматизации
+│   ├── build_config.py           # Конфигурация сборки
 │   ├── build_actions.py          # Действия сборки
 │   ├── build_menu.py             # Интерактивное меню
-│   ├── build_new.bat             # Launcher для Windows
 │   ├── user_config.template.py   # Шаблон пользовательской конфигурации
 │   ├── BUILD_SYSTEM_README.md    # Полная документация
 │   ├── BUILD_EXAMPLES.md         # Примеры использования
-│   └── BUILD_FAQ.md              # Часто задаваемые вопросы
+│   ├── BUILD_FAQ.md              # Часто задаваемые вопросы
+│   └── CMAKE/
+│       ├── CmakeHelpers.cmake    # CMake хелперы
+│       └── Toolchains/           # Тулчейны компиляторов
+├── App/                          # Приложение
+├── Engine/                       # Библиотека движка
+├── docs/                         # Документация
 └── [папки сборки создаются автоматически]
-    ├── build/                    # Ninja/Manual
-    ├── vs-build/                 # Visual Studio
     ├── cmake-build-debug/        # CLion Debug
-    └── cmake-build-release/      # CLion Release
+    ├── cmake-build-release/      # CLion Release
+    └── vs-build/                 # Visual Studio (опционально)
 ```
 
 ## ⚙️ Пользовательская конфигурация

@@ -31,7 +31,7 @@ python Automation\automation_new.py
 ### Интерактивное меню
 
 ```powershell
-.\build.bat
+.\Automation\build.bat
 # или
 python Automation\automation_new.py
 ```
@@ -83,19 +83,40 @@ python Automation\automation_new.py -b ninja -c release build
 
 ```
 HuyEngine/
-├── build.bat                    # Быстрый запуск (корень)
+├── CMakeLists.txt               # Корневая конфигурация CMake (v3.31.6, C++23)
+├── CMakePresets.json            # CMake пресеты (otladka, reliz)
 ├── Automation/
-│   ├── automation_new.py        # Главный скрипт
-│   ├── build_config.py          # Конфигурация
+│   ├── build.bat                # Главный скрипт запуска сборки
+│   ├── build_menu.bat           # Запуск интерактивного меню
+│   ├── automation_new.py        # Главный скрипт автоматизации
+│   ├── build_config.py          # Конфигурация сборки
 │   ├── build_actions.py         # Действия сборки
 │   ├── build_menu.py            # Интерактивное меню
-│   └── user_config.template.py  # Шаблон пользовательской конфигурации
-├── Engine/                      # Исходный код движка
-└── Documentation/               # Документация (на русском)
-    ├── BUILD_QUICKSTART.md      # Быстрый старт
-    ├── BUILD_SYSTEM_README.md   # Полное руководство
-    ├── BUILD_EXAMPLES.md        # Примеры использования
-    └── BUILD_FAQ.md             # Часто задаваемые вопросы
+│   ├── user_config.template.py  # Шаблон пользовательской конфигурации
+│   ├── README.md                # Документация системы сборки
+│   └── CMAKE/
+│       ├── CmakeHelpers.cmake   # CMake хелперы
+│       └── Toolchains/          # Тулчейны компиляторов
+├── App/                         # Приложение (исполняемый файл)
+│   ├── CMakeLists.txt           # CMake конфигурация приложения
+│   ├── EngineConfig.h.template  # Шаблон версии
+│   └── Source/
+│       ├── main.cpp             # Точка входа
+│       ├── pch.cpp/pch.hpp      # Предкомпилированные заголовки
+│       └── Version.h            # Информация о версии
+├── Engine/                      # Библиотека движка (статическая)
+│   ├── CMakeLists.txt           # CMake конфигурация движка
+│   ├── EngineConfig.h.template  # Шаблон версии
+│   └── Source/
+│       └── Core/
+│           ├── Engine.hpp       # Заголовок класса Engine
+│           └── Engine.cpp       # Реализация движка
+├── docs/                        # Документация (на русском)
+│   ├── README.md                # Индекс документации
+│   ├── BUILD_QUICKSTART.md      # Быстрый старт
+│   ├── BUILD_INSTRUCTIONS_RU.md # Полная инструкция
+│   └── [другие документы]
+└── cmake-build-*/               # Папки сборки (создаются автоматически)
 ```
 
 ## ⚙️ Конфигурация
@@ -333,12 +354,12 @@ Set-Alias -Name build -Value bb
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # Вариант 2: Запустите с переменной окружения
-$env:PYTHONIOENCODING="utf-8"
+$env:PYTHONIOENCODING = "utf-8"
 python Automation\automation_new.py
 
 # Вариант 3: Добавьте в профиль PowerShell ($PROFILE)
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$env:PYTHONIOENCODING="utf-8"
+$env:PYTHONIOENCODING = "utf-8"
 ```
 
 **Примечание:** Эта проблема решена в последней версии системы сборки (v2.0.1+).

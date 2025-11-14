@@ -1,6 +1,9 @@
 # HuyEngine
 
 [![Документация: GitHub Copilot](https://img.shields.io/badge/Документация-GitHub%20Copilot-blue?logo=github)](https://github.com/features/copilot)
+[![Windows Build](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/windows-build.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/windows-build.yml)
+[![Linux Build](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/linux-build.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/linux-build.yml)
+[![Clang-format check](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/clang-format-checker.yml/badge.svg)](https://github.com/YOUR_USERNAME/HuyEngine/actions/workflows/clang-format-checker.yml)
 
 Custom Game Engine built with C++ and CMake.
 
@@ -8,16 +11,16 @@ Custom Game Engine built with C++ and CMake.
 
 ## 🚀 Quick Start
 
-### New Build System v2.0 (Recommended)
+### Build System v2.0 (Recommended)
 
 ```bash
 # Interactive menu (easiest way)
-build.bat
+Automation\build.bat
 
 # Or quick commands
-build.bat rebuild    # Full rebuild
-build.bat build      # Build
-build.bat run        # Run
+Automation\build.bat rebuild    # Full rebuild
+Automation\build.bat build      # Build
+Automation\build.bat run        # Run
 ```
 
 **📖 Full documentation:** [docs/README.md](docs/README.md) | [Automation/README.md](Automation/README.md)
@@ -45,103 +48,187 @@ build.bat run        # Run
 choco install python cmake ninja
 ```
 
-### Quick Start - New System
+## 🔄 CI/CD
+
+Project uses GitHub Actions for continuous integration:
+
+- ✅ **Windows Build** - MSVC compilation (Debug/Release)
+- ✅ **Linux Build** - GCC 13 & Clang 18 compilation
+- ✅ **Clang-format Check** - Code style validation
+
+All workflows run automatically on push/PR to `master` branch. See [.github/workflows/](.github/workflows/) for details.
+
+### Quick Start
 
 ```bash
 # Interactive menu
-build.bat
+Automation\build.bat
 
 # Command line
-build.bat rebuild              # Full rebuild
-build.bat build                # Build only
-build.bat clean-all            # Clean all
-build.bat run                  # Run app
+Automation\build.bat rebuild              # Full rebuild
+Automation\build.bat build                # Build only
+Automation\build.bat clean-all            # Clean all
+Automation\build.bat run                  # Run app
 
 # With options
-build.bat -i clion -c debug generate
-build.bat -b ninja -c release build
+Automation\build.bat -i clion -c debug generate
+Automation\build.bat -b ninja -c release build
 ```
 
 ### Build Commands (New System v2.0)
 
-| Command               | Description                   |
-|-----------------------|-------------------------------|
-| `build.bat`           | Interactive menu (easiest)    |
-| `build.bat generate`  | Generate CMake project        |
-| `build.bat build`     | Build project                 |
-| `build.bat rebuild`   | Full rebuild                  |
-| `build.bat clean`     | Clean current folder          |
-| `build.bat clean-all` | Clean all build folders       |
-| `build.bat run`       | Run executable                |
-| `build.bat format`    | Format code with clang-format |
+| Command                          | Description                   |
+|----------------------------------|-------------------------------|
+| `Automation\build.bat`           | Interactive menu (easiest)    |
+| `Automation\build.bat generate`  | Generate CMake project        |
+| `Automation\build.bat build`     | Build project                 |
+| `Automation\build.bat rebuild`   | Full rebuild                  |
+| `Automation\build.bat clean`     | Clean current folder          |
+| `Automation\build.bat clean-all` | Clean all build folders       |
+| `Automation\build.bat run`       | Run executable                |
+| `Automation\build.bat format`    | Format code with clang-format |
 
 ### Examples
 
 ```bash
 # Interactive menu (recommended)
-build.bat
+Automation\build.bat
 
 # Quick commands
-build.bat rebuild
-build.bat run
+Automation\build.bat rebuild
+Automation\build.bat run
 
 # With options
-build.bat -i clion -c debug generate
-build.bat -b ninja -c release build
+Automation\build.bat -i clion -c debug generate
+Automation\build.bat -b ninja -c release build
+
 # Release build
-build.bat rebuild --configuration Release
-build.bat run --configuration Release
+Automation\build.bat rebuild --configuration Release
+Automation\build.bat run --configuration Release
+
 # Clean build directory
-build.bat clean
+Automation\build.bat clean
+
 # Format code
-build.bat clang_format
+Automation\build.bat format
 ```
 
 ## Project Structure
 
 ```
 HuyEngine/
-├── CMakeLists.txt          # Root CMake configuration
-├── main.cpp                # Application entry point
-├── build.bat               # Build automation wrapper
-├── Engine/                 # Engine module
-│   ├── CMakeLists.txt      # Engine CMake configuration
-│   ├── Core/               # Public headers
-│   └── Source/             # Implementation files
-└── Automation/             # Build automation scripts
-    ├── automation.py       # Python build script
-    ├── build.bat           # Legacy wrapper
-    └── CMAKE/              # CMake helper functions
-        └── CmakeHelpers.cmake
+├── CMakeLists.txt              # Root CMake configuration (v3.31.6, C++23)
+├── CMakePresets.json           # CMake presets for direct CMake usage
+├── README.md                   # This file
+├── App/                        # Application module
+│   ├── CMakeLists.txt          # App CMake configuration
+│   ├── EngineConfig.h.template # Version template
+│   └── Source/
+│       ├── main.cpp            # Entry point
+│       ├── pch.cpp/pch.hpp     # Precompiled headers
+│       └── Version.h           # Version info
+├── Engine/                     # Engine library module
+│   ├── CMakeLists.txt          # Engine CMake configuration (static lib)
+│   ├── EngineConfig.h.template # Version template
+│   └── Source/
+│       └── Core/
+│           ├── Engine.hpp      # Engine class header
+│           └── Engine.cpp      # Engine implementation
+├── Automation/                 # Build automation system v2.0
+│   ├── build.bat               # Main build launcher
+│   ├── build_menu.bat          # Interactive menu launcher
+│   ├── automation_new.py       # Python automation script
+│   ├── build_config.py         # Build configuration
+│   ├── build_actions.py        # Build actions
+│   ├── build_menu.py           # Interactive menu
+│   ├── user_config.template.py # User config template
+│   ├── README.md               # Automation documentation
+│   └── CMAKE/
+│       ├── CmakeHelpers.cmake  # CMake helper functions
+│       └── Toolchains/         # Compiler toolchains
+├── docs/                       # Documentation (RU)
+│   ├── README.md               # Documentation index
+│   ├── BUILD_QUICKSTART.md     # Quick start guide
+│   ├── BUILD_INSTRUCTIONS_RU.md # Full build instructions
+│   └── [other docs]
+├── scripts/                    # Additional scripts
+└── cmake-build-*/              # Build directories (auto-generated)
 ```
 
 ## Configuration
 
-Build settings can be modified in `Automation/automation.py`:
+Build settings can be customized:
+
+1. **User Configuration** (Recommended):
+   ```bash
+   # Copy template
+   copy Automation\user_config.template.py Automation\user_config.py
+   
+   # Edit user_config.py with your preferences
+   ```
+
+2. **Project Configuration**:
+    - `CMakeLists.txt` - CMake settings (C++23, version 1.0.0)
+    - `CMakePresets.json` - CMake presets (otladka, reliz)
+    - `Automation/build_config.py` - Build system configuration
+
+Example `user_config.py`:
 
 ```python
-class Config:
-    CMAKE_PATH = r"C:\Program Files\CMake\bin\cmake.exe"
-    NINJA_PATH = r"C:\ProgramData\chocolatey\bin\ninja.exe"
-    CXX_COMPILER = r"C:\Program Files\...\cl.exe"
-    CMAKE_GENERATOR = "Ninja"
-    BUILD_FOLDER = "build"
-    EXECUTABLE_NAME = "HuyEngine.exe"
+DEFAULT_IDE = "vs"
+DEFAULT_BUILD_SYSTEM = "msbuild"
+DEFAULT_CONFIGURATION = "release"
+
+# Custom paths (optional)
+USER_CMAKE_PATH = r"D:\Tools\CMake\bin\cmake.exe"
+USER_NINJA_PATH = r"D:\Tools\Ninja\ninja.exe"
+
+# Additional CMake flags
+CUSTOM_CMAKE_FLAGS = ["-DENABLE_TESTING=ON"]
 ```
 
 ## Development
 
+### Project Structure
+
+- **HuyEngine** - Game engine project with modular architecture
+- **Engine** - Core engine library (static library)
+    - Built as `HuyEngineLib`
+    - Contains engine core functionality
+- **App** - Application executable
+    - Built as `HuyEngineApp.exe`
+    - Links with `HuyEngineLib`
+    - Startup project in Visual Studio
+
 ### Adding New Source Files
 
-1. Add `.cpp` files to `Engine/Source/`
-2. Add `.h/.hpp` headers to `Engine/Core/`
-3. CMake will automatically pick them up (using `file(GLOB_RECURSE)`)
-4. Rebuild: `build.bat rebuild`
+**Engine Library:**
+
+1. Add `.cpp` files to `Engine/Source/Core/`
+2. Add `.hpp` headers to `Engine/Source/Core/`
+3. Update `Engine/CMakeLists.txt` if needed (uses manual source list)
+4. Rebuild: `Automation\build.bat rebuild`
+
+**Application:**
+
+1. Add `.cpp` files to `App/Source/`
+2. Add headers to `App/Source/`
+3. Update `App/CMakeLists.txt` if needed
+4. Rebuild: `Automation\build.bat rebuild`
+
+### CMake Features
+
+- **C++23 Standard** (set in root CMakeLists.txt)
+- **Versioning** - Automatic version configuration via templates
+- **Precompiled Headers** - PCH support for faster compilation (App)
+- **IDE Folders** - Source grouping for better organization
+- **Output Directories** - All binaries in `${CMAKE_BINARY_DIR}/bin`
 
 ### IDE Support
 
-- **CLion**: Open project root, CMake configuration is automatic
-- **Visual Studio**: Generate VS solution: change `CMAKE_GENERATOR` to `"Visual Studio 17 2022"`
+- **CLion**: Open project root, uses `cmake-build-*` folders and CMakePresets.json
+- **Visual Studio**: Generate via menu or `Automation\build.bat -i vs -b msbuild generate`
+- **VSCode**: See [docs/VSCODE_SETUP.md](docs/VSCODE_SETUP.md)
 
 ## 🤖 Документация
 
