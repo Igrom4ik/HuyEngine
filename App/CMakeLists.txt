@@ -13,8 +13,12 @@ set(APP_SOURCES
         Source/pch.cpp
         Source/pch.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/EngineConfig.h
-        Source/main.PVS-Studio.i
 )
+
+# Append generated PVS preprocessed file only if it exists
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/main.PVS-Studio.i")
+    list(APPEND APP_SOURCES "Source/main.PVS-Studio.i")
+endif ()
 
 add_executable(${APP_TARGET} ${APP_SOURCES})
 target_link_libraries(${APP_TARGET} PRIVATE ${PROJECT_NAME}Lib)
