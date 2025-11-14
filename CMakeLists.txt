@@ -20,5 +20,13 @@ add_subdirectory(App)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT HuyEngineApp)
 
-include(${CMAKE_SOURCE_DIR}/Automation/CMAKE/CMakeHelpers.cmake)
-system_info()
+# Подключаем дополнительные CMake-хелперы только если файл существует
+set(_helpers_path "${CMAKE_SOURCE_DIR}/Automation/CMAKE/CMakeHelpers.cmake")
+if (EXISTS "${_helpers_path}")
+    include("${_helpers_path}")
+    if (COMMAND system_info)
+        system_info()
+    endif ()
+else ()
+    message(WARNING "Optional CMake helpers not found: ${_helpers_path}. Continuing without it.")
+endif ()
