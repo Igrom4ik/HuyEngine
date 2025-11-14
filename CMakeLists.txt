@@ -32,12 +32,22 @@ else ()
 endif ()
 
 # --- CPack (packaging) ---
-include(InstallRequiredSystemLibraries)
-set(CPACK_PACKAGE_NAME "HuyEngine")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_GENERATOR "ZIP;TGZ")
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}")
 install(TARGETS HuyEngineApp RUNTIME DESTINATION bin)
 # Install package documentation
 install(FILES ${CMAKE_SOURCE_DIR}/PACKAGE_README.md DESTINATION . RENAME README.md)
+
+# Load release-specific CPack defaults (create cmake/CPackReleaseConfig.cmake)
+if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/CPackReleaseConfig.cmake")
+    include("${CMAKE_SOURCE_DIR}/cmake/CPackReleaseConfig.cmake")
+endif ()
+
+# Ensure CPack module is loaded (this generates package targets such as 'package')
 include(CPack)
+
+# Helper target: build, install into CMAKE_INSTALL_PREFIX and then run packaging target
+add_custom_target(package-release
+        COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --config Release --target install
+        COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --config Release --target package
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+        COMMENT "Build Release, install to ${CMAKE_INSTALL_PREFIX} and create release ZIP via CPack"
+)
