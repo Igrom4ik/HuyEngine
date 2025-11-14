@@ -30,3 +30,12 @@ if (EXISTS "${_helpers_path}")
 else ()
     message(WARNING "Optional CMake helpers not found: ${_helpers_path}. Continuing without it.")
 endif ()
+
+# --- CPack (packaging) ---
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_NAME "HuyEngine")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_GENERATOR "ZIP;TGZ")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}")
+install(TARGETS HuyEngineApp RUNTIME DESTINATION bin)
+include(CPack)
