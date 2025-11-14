@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
 
@@ -25,11 +25,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake build-essential
 
-      - name: Setup tools (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-          brew install cmake ninja || true
 
       - name: Setup tools (Windows)
         if: runner.os == 'Windows'
